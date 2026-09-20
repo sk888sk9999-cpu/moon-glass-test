@@ -20,7 +20,7 @@ jobs:
           unzip -q Moon_Glass_Galaxy_Test_Mobile_Upload.zip
           sed -i 's#</resources>#<item component="ComponentInfo{com.skt.prod.dialer/com.skt.prod.dialer.activities.main.MainActivity}" drawable="mg_01_phone" /></resources>#' app/src/main/{res/xml,assets}/appfilter.xml
           python3 tools/check_assets.py
-                    unzip -o -q Moon_Glass_Global_Mapping_Patch.zip
+                    unzip -o -q Moon_Glass_Global_Apps_Patch_v2.zip
 
 
       - uses: actions/setup-java@v4

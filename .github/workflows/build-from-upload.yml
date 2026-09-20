@@ -1,4 +1,3 @@
-
 name: Moon Glass Galaxy Test APK
 
 on:
@@ -14,20 +13,40 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Extract project
-        run: |
-          unzip -q Moon_Glass_Galaxy_Test_Mobile_Upload.zip
-          sed -i 's#</resources>#<item component="ComponentInfo{com.skt.prod.dialer/com.skt.prod.dialer.activities.main.MainActivity}" drawable="mg_01_phone" /></resources>#' app/src/main/{res/xml,assets}/appfilter.xml
-          python3 tools/check_assets.py
-                    unzip -o -q Moon_Glass_Global_Core_Patch_v4.zip
 
+      - name: Extract and verify complete v4 project
+        run: |
+          set -euo pipefail
+          unzip -q Moon_Glass_Galaxy_Test_Mobile_Upload.zip
+          unzip -o -q Moon_Glass_Global_Core_Patch_v4.zip
+          python3 tools/check_assets.py
+          cmp app/src/main/res/xml/appfilter.xml app/src/main/assets/appfilter.xml
+          python3 - <<'PY'
+          from pathlib import Path
+          from xml.etree import ElementTree as ET
+          root = ET.parse('app/src/main/res/xml/appfilter.xml').getroot()
+          items = root.findall('item')
+          components = [item.attrib['component'] for item in items]
+          if len(components) != len(set(components)):
+              raise SystemExit('FAIL: duplicate launcher components')
+          required = {
+              'com.skt.prod.dialer/com.skt.prod.dialer.activities.main.MainActivity',
+              'word.office.docxviewer.document.docx.reader/word.office.docxviewer.document.docx.reader.ui.WelcomeAct',
+              'com.google.android.googlequicksearchbox/com.google.android.googlequicksearchbox.SearchActivity',
+              'com.sec.android.app.samsungapps/com.sec.android.app.samsungapps.SamsungAppsMainActivity',
+              'com.samsung.android.oneconnect/com.samsung.android.oneconnect.ui.SCMainActivity',
+          }
+          observed = {component.removeprefix('ComponentInfo{').removesuffix('}') for component in components}
+          missing = required - observed
+          if missing:
+              raise SystemExit(f'FAIL: missing required mapping(s): {sorted(missing)}')
+          print(f'PASS: {len(components)} unique launcher mappings, both appfilters identical, key tested mappings retained')
+          PY
 
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-
 
       - uses: android-actions/setup-android@v3
         with:
@@ -47,3 +66,4 @@ jobs:
         with:
           name: Moon_Glass_Test_APK
           path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error

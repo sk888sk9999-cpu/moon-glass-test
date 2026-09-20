@@ -1,0 +1,43 @@
+
+name: Moon Glass Galaxy Test APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract project
+        run: |
+          unzip -q Moon_Glass_Galaxy_Test_Mobile_Upload.zip
+          python3 tools/check_assets.py
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK
+        run: sdkmanager --install 'platforms;android-35' 'build-tools;35.0.0'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Build APK
+        run: gradle :app:assembleDebug --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Moon_Glass_Test_APK
+          path: app/build/outputs/apk/debug/app-debug.apk

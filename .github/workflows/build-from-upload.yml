@@ -14,8 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name
+      
       - name: Extract project
         run: |
           unzip -q Moon_Glass_Galaxy_Test_Mobile_Upload.zip

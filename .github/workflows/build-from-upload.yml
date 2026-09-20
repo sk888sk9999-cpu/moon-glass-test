@@ -18,7 +18,7 @@ jobs:
         run: |
           set -euo pipefail
           unzip -q Moon_Glass_Galaxy_Test_Mobile_Upload.zip
-          unzip -o -q Moon_Glass_Global_Core_Patch_v4.zip
+          unzip -o -q Moon_Glass_v5_1_Cumulative_8_App_Icons_Patch.zip
           python3 tools/check_assets.py
           cmp app/src/main/res/xml/appfilter.xml app/src/main/assets/appfilter.xml
           python3 - <<'PY'

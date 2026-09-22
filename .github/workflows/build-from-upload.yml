@@ -23,6 +23,7 @@ jobs:
           unzip -o -q Moon_Glass_v5_5_Mobile_Small_Part_3_of_5.zip
           unzip -o -q Moon_Glass_v5_5_Mobile_Small_Part_4_of_5.zip
           unzip -o -q Moon_Glass_v5_5_Mobile_Small_Part_5_of_5.zip
+          unzip -o -q Moon_Glass_v5_5_Slack_Mapping_Addendum.zip
           python3 tools/check_assets.py
           cmp app/src/main/res/xml/appfilter.xml app/src/main/assets/appfilter.xml
           python3 - <<'PY'
